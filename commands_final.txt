@@ -1,0 +1,544 @@
+Enabling STP and selecting Root bridge DSW0
+
+DSW0(config)#spanning-tree vlan 1 root primary 
+DSW0(config)#exit
+
+selecting Root bridge ASW0(Secondary)
+
+ASW0(config)#spanning-tree vlan 1 root Secondary
+ASW0(config)#exit
+
+Enabling Vlans on DSW0 
+
+DSW0(config)#vlan 2
+DSW0(config-vlan)#name HR
+DSW0(config-vlan)#vlan 3
+DSW0(config-vlan)#name ACCOUNTING
+DSW0(config)#vlan 4
+DSW0(config-vlan)#name GENERAL
+DSW0(config-vlan)#ex
+
+
+interVlan routing DSW0
+
+DSW0(config)#int f0/1
+DSW0(config-if)#sw
+DSW0(config-if)#switchport mode tr
+DSW0(config-if)#switchport mode trunk
+
+
+Setting VTP on DSW0
+
+
+
+VTP Server on DSW0
+
+DSW0(config)#vtp mode server 
+Device mode already VTP SERVER.
+DSW0(config)#vtp domain CCNA
+Changing VTP domain name from NULL to CCNA
+DSW0(config)#vtp password cisco
+Setting device VLAN database password to cisco
+
+VTP Client on ASW0
+
+ASW0(config)#vtp mode client 
+Setting device to VTP CLIENT mode.
+ASW0(config)#vtp domain CCNA
+Domain name already set to CCNA.
+ASW0(config)#vtp password cisco
+Setting device VLAN database password to cisco
+
+VTP Client on ASW1
+
+ASW1(config)#vtp mode client 
+Setting device to VTP CLIENT mode.
+ASW1(config)#vtp domain CCNA
+Domain name already set to CCNA.
+ASW1(config)#vtp password cisco
+Setting device VLAN database password to cisco
+
+setting interface on Vlans on ASW0 and ASW1
+
+Using f0/10 for HR
+Using f0/11 for ACCOUNTING
+Using f0/12 for GENERAL
+using f0/15 for Tech support
+
+ASW0(config)#interface fastEthernet 0/10
+ASW0(config-if)#switchport mode ?
+  access   Set trunking mode to ACCESS unconditionally
+  dynamic  Set trunking mode to dynamically negotiate access or trunk mode
+  trunk    Set trunking mode to TRUNK unconditionally
+
+ASW0(config-if)#switchport mode access 
+ASW0(config-if)#switchport access vlan 2
+ASW0(config-if)#ex
+
+ASW0(config)#interface fastEthernet 0/11
+ASW0(config-if)#switchport mode access 
+ASW0(config-if)#switchport access vlan 3
+ASW0(config-if)#ex
+
+ASW0(config)#interface fastEthernet 0/12
+ASW0(config-if)#switchport mode access 
+ASW0(config-if)#switchport access vlan 4
+ASW0(config-if)#ex
+
+ASW0(config)#int f0/15
+ASW0(config-if)#switchport mode access 
+ASW0(config-if)#switchport access vlan 11
+ASW0(config-if)#ex
+
+ASW1(config)#int f0/15
+ASW1(config-if)#switchport mode access 
+ASW1(config-if)#switchport access vlan 11
+ASW1(config-if)#ex
+
+EtherChannel
+
+ASW1
+DSW0(config)#interface range fastEthernet 0/22-23
+DSW0(config-if-range)#switchport mode trunk
+
+ASW0
+DSW0(config-if-range)#interface range fastEthernet 0/20-21
+DSW0(config-if-range)#switchport mode trunk 
+
+ASW0-ASW1
+DSW0(config-if-range)#interface range fastEthernet 0/18-19
+DSW0(config-if-range)#switchport mode trunk 
+
+******************************************************************************************
+
+DSW0(config)#interface range f0/22-23
+DSW0(config-if-range)#sh
+DSW0(config-if-range)#channel-group 1 mode desirable
+Creating a port-channel interface Port-channel 1
+DSW0(config-if-range)#no sh
+
+DSW0(config)#interface port-channel 1
+DSW0(config-if)#switchport mode trunk
+
+ASW1(config)#interface range f0/22-23
+ASW1(config-if-range)#sh
+ASW1(config-if-range)#channel-group 1 mode desirable
+Creating a port-channel interface Port-channel 1
+ASW1(config-if-range)#no sh
+
+ASW1(config)#interface port-channel 1
+ASW1(config-if)#switchport mode trunk
+ASW1(config-if)#ex
+
+******************************************************************************************
+
+DSW0(config)#interface range f0/20-21
+DSW0(config-if-range)#sh
+DSW0(config-if-range)#channel-group 1 mode desirable
+DSW0(config-if-range)#no sh
+
+ASW0(config)#interface range f0/20-21
+ASW0(config-if-range)#sh
+ASW0(config-if-range)#channel-group 1 mode desirable
+Creating a port-channel interface Port-channel 1
+ASW0(config-if-range)#no sh
+
+ASW0(config)#interface port-channel 1
+ASW0(config-if)#switchport mode trunk
+ASW0(config-if)#ex
+
+******************************************************************************************
+show interfaces trunk
+do show etherchannel summary
+
+ASW0(config)#interface range fastEthernet 0/18-19
+ASW0(config-if-range)#sh
+ASW0(config-if-range)#channel-group 2 mode active
+ASW0(config-if-range)#
+Creating a port-channel interface Port-channel 2
+ASW0(config-if-range)#no sh
+ASW0(config-if-range)#interface port-channel 2
+ASW0(config-if)#switchport mode trunk
+ASW0(config-if)#ex
+
+ASW1(config-if-range)#interface range fastEthernet 0/18-19
+ASW1(config-if-range)#sh
+ASW1(config-if-range)#channel-group 2 mode active
+Command rejected (the interface Fa0/18 is ): is already part of a channel with a different type of protocol enabled
+Command rejected (the interface Fa0/19 is ): is already part of a channel with a different type of protocol enabled
+ASW1(config-if-range)#no channel-group 1 mode desirable
+ASW1(config-if-range)#channel-group 2 mode active
+ASW1(config-if-range)#
+Creating a port-channel interface Port-channel 2
+ASW1(config-if-range)#no sh
+ASW1(config-if-range)#interface port-channel 2
+ASW1(config-if)#switchport mode trunk
+ASW1(config-if)#ex
+
+
+
+
+
+
+
+
+
+ASW1(config-if-range)#channel-group 1 mode desirable
+ASW1(config-if-range)#
+%EC-5-CANNOT_BUNDLE2: Fa0/18 is not compatible with Fa0/22 and will be suspended (dtp mode of Fa0/18 is on, Fa0/22is off )
+
+%EC-5-CANNOT_BUNDLE2: Fa0/19 is not compatible with Fa0/22 and will be suspended (dtp mode of Fa0/19 is on, Fa0/22is off )
+
+
+
+
+
+Enabling intervlan routing
+
+Toronto-HQ(config-if)#int f0/1.2
+Toronto-HQ(config-subif)#encapsulation dot1Q 2
+Toronto-HQ(config-subif)#ip address 172.27.11.1 255.255.255.0
+Toronto-HQ(config-subif)#no sh
+Toronto-HQ(config-subif)#ex
+
+Toronto-HQ(config)#int f0/1.3
+Toronto-HQ(config-subif)#encapsulation dot1Q 3
+Toronto-HQ(config-subif)#ip address 172.27.10.1 255.255.255.0
+Toronto-HQ(config-subif)#no sh 
+Toronto-HQ(config-subif)#ex
+
+Toronto-HQ(config-if)#int f0/1.4
+Toronto-HQ(config-subif)#encapsulation dot1Q 4
+Toronto-HQ(config-subif)#ip address 172.27.8.1 255.255.254.0
+Toronto-HQ(config-subif)#no sh
+Toronto-HQ(config-subif)#ex
+
+Toronto-HQ(config)#int f0/1.11
+Toronto-HQ(config-subif)#encapsulation dot1Q 11
+Toronto-HQ(config-subif)#ip address 172.27.12.1 255.255.255.128
+Toronto-HQ(config-subif)#ex
+
+Configuring DHCP POOL on Toronto Router
+
+ip dhcp pool HR
+ network 172.27.11.0 255.255.255.0
+ default-router 172.27.11.1
+ dns-server 172.27.9.254
+
+Toronto-HQ(config)#ip dhcp pool Accounting
+Toronto-HQ(dhcp-config)#network 172.27.10.1 255.255.255.0
+Toronto-HQ(dhcp-config)#default-router 172.27.10.1
+Toronto-HQ(dhcp-config)#dns-server 172.27.9.254
+Toronto-HQ(config)#ip dhcp ex
+Toronto-HQ(config)#ip dhcp excluded-address 172.27.10.1
+
+Toronto-HQ(config)#ip dhcp pool General
+Toronto-HQ(dhcp-config)#network 172.27.8.0 255.255.254.0
+Toronto-HQ(dhcp-config)#default-router 172.27.8.1
+Toronto-HQ(dhcp-config)#dns-server 172.27.9.254
+Toronto-HQ(dhcp-config)#ex
+Toronto-HQ(config)#ip dhcp excluded-address 172.27.8.1
+Toronto-HQ(config)#ip dhcp excluded-address 172.27.9.254
+
+Toronto-HQ(config)#ip dhcp pool Tech-Support
+Toronto-HQ(dhcp-config)#network 172.27.12.1 255.255.255.128
+Toronto-HQ(dhcp-config)#default-router 172.27.12.1
+Toronto-HQ(dhcp-config)#dns-server 172.27.9.254
+Toronto-HQ(dhcp-config)#ex
+Toronto-HQ(config)#ip dhcp excluded-address 172.27.12.1
+
+
+
+
+Configuring DHCP POOL on OTTAWA Router 
+
+Router(config)#hostname OTTAWA_Router
+OTTAWA_Router(config)#int f0/0
+OTTAWA_Router(config-if)#ip add
+OTTAWA_Router(config-if)#ip address 172.27.0.1 255.255.252.0
+OTTAWA_Router(config-if)#no sh
+OTTAWA_Router(config)#ip dhcp pool BRANCH-1
+OTTAWA_Router(dhcp-config)#network 172.27.0.0 255.255.252.0
+OTTAWA_Router(dhcp-config)#default-router 172.27.0.1
+OTTAWA_Router(dhcp-config)#dns-server 8.8.8.8
+OTTAWA_Router(dhcp-config)#ex
+OTTAWA_Router(config)#ip dhcp excluded-address 172.27.0.1
+
+
+OTTAWA_Router(config-if)#int f0/1
+OTTAWA_Router(config-if)#ip add
+OTTAWA_Router(config-if)#ip address 172.27.4.1 255.255.252.0
+OTTAWA_Router(config-if)#no sh
+OTTAWA_Router(config)#ip dhcp pool BRANCH-2
+OTTAWA_Router(dhcp-config)#network 172.27.4.0 255.255.252.0
+OTTAWA_Router(dhcp-config)#default-router 172.27.4.1
+OTTAWA_Router(dhcp-config)#dns-server 8.8.8.8
+OTTAWA_Router(dhcp-config)#ex
+OTTAWA_Router(config)#ip dhcp excluded-address 172.27.4.1
+
+
+Configuring DHCP POOL on MISSISSAUGA Router 
+
+
+MISSISSAUGA_Router(config)#int f0/0
+MISSISSAUGA_Router(config-if)#ip add
+MISSISSAUGA_Router(config-if)#ip address 172.27.14.1 255.255.255.0
+MISSISSAUGA_Router(config-if)#no sh
+MISSISSAUGA_Router(config-if)#ip dhcp pool MISSISSAUGA
+MISSISSAUGA_Router(dhcp-config)#network 172.27.14.0 255.255.255.0
+MISSISSAUGA_Router(dhcp-config)#default-router 172.27.14.1
+MISSISSAUGA_Router(dhcp-config)#dns-server 8.8.8.8
+MISSISSAUGA_Router(dhcp-config)#ex
+MISSISSAUGA_Router(config)#ip dhcp excluded-address 172.27.14.1
+
+
+Configuring DHCP POOL on Hamilton Router
+
+Hamilton_Router(config)#int f0/0
+Hamilton_Router(config-if)#ip address 172.27.13.1 255.255.255.0
+Hamilton_Router(config-if)#no sh
+
+Hamilton_Router(config-if)#
+%LINK-5-CHANGED: Interface FastEthernet0/0, changed state to up
+
+Hamilton_Router(config-if)#ex
+Hamilton_Router(config)#ip dhcp pool Hamilton
+
+Hamilton_Router(dhcp-config)#network 172.27.13.0 255.255.255.0
+Hamilton_Router(dhcp-config)#default-router 172.27.13.1
+Hamilton_Router(dhcp-config)#dns-server 8.8.8.8
+Hamilton_Router(dhcp-config)#ex
+Hamilton_Router(config)#ip dhcp excluded-address 172.27.13.1
+
+Configuring DHCP POOL on London Router
+
+London_Router(config)#ip dhcp pool London
+London_Router(dhcp-config)#net
+London_Router(dhcp-config)#network 172.27.15.0 255.255.255.0
+London_Router(dhcp-config)#%DHCPD-4-PING_CONFLICT: DHCP address conflict:  server pinged 172.27.15.1.
+
+London_Router(dhcp-config)#
+London_Router(dhcp-config)#
+London_Router(dhcp-config)#
+London_Router(dhcp-config)#de
+London_Router(dhcp-config)#default-router 172.27.15.1
+London_Router(dhcp-config)#ex
+London_Router(config)#ip dhcp ex
+London_Router(config)#ip dhcp excluded-address 172.27.15.1
+	
+
+Enabling ospf on all routers
+
+London
+Hamilton_Router(config)#int f0/1
+Hamilton_Router(config-if)#ip
+Hamilton_Router(config-if)#ip add
+Hamilton_Router(config-if)#ip address 172.27.15.1 255.255.255.0
+Hamilton_Router(config-if)#no sh
+
+Hamilton
+
+Hamilton_Router(config)#router ospf 7
+London_Router(config-router)#router-id 4.4.4.4
+Hamilton_Router(config-router)#network 172.27.16.10 0.0.0.3 area 0
+Hamilton_Router(config-router)#network 172.27.16.13 0.0.0.3 area 0
+Hamilton_Router(config-router)#network 172.27.13.0 0.0.0.255 area 0
+
+MISSISSAUGA
+
+MISSISSAUGA_Router(config)#router ospf 7
+MISSISSAUGA_Router(config-router)#router-id 3.3.3.3
+MISSISSAUGA_Router(config-router)#network 172.27.14.0 0.0.0.255 area 0
+MISSISSAUGA_Router(config-router)#network 172.27.16.6 0.0.0.3 area 0
+MISSISSAUGA_Router(config-router)#ex
+
+OTTAWA
+
+OTTAWA_Router(config)#router ospf 7
+OTTAWA_Router(config-router)#rou
+OTTAWA_Router(config-router)#router-id 2.2.2.2
+OTTAWA_Router(config-router)#net
+OTTAWA_Router(config-router)#network 172.27.16.2 0.0.0.3 area 0
+OTTAWA_Router(config-router)#
+OTTAWA_Router(config-router)#
+OTTAWA_Router(config-router)#network 172.27.4.0 0.0.3.255 area 0
+OTTAWA_Router(config-router)#network 172.27.0.0 0.0.3.255 area 0
+OTTAWA_Router(config-router)#ex
+
+Toronto
+
+Toronto-HQ(config)#router ospf 7
+Toronto-HQ(config-router)#router-id 1.1.1.1
+Toronto-HQ(config-router)#network 172.27.16.1 0.0.0.3 area 0
+Toronto-HQ(config-router)#network 172.27.16.5 0.0.0.3 area 0
+Toronto-HQ(config-router)#network 172.27.16.9 0.0.0.3 area 0
+Toronto-HQ(config)#ex
+
+
+providing ip address to access internet
+
+Toronto-HQ(config)#interface FastEthernet0/0
+Toronto-HQ(config-if)#no ip address
+Toronto-HQ(config-if)#no ip address
+Toronto-HQ(config-if)#no ip address
+Toronto-HQ(config-if)#no ip address  199.165.201.225 255.255.255.252
+Toronto-HQ(config-if)#ip add
+Toronto-HQ(config-if)#ip address 199.165.201.224 255.255.255.252
+Bad mask /30 for address 199.165.201.224
+Toronto-HQ(config-if)#no ip address 199.165.201.224 255.255.255.252
+Toronto-HQ(config-if)#ip address 199.165.201.225 255.255.255.252
+Toronto-HQ(config-if)#no sh
+Toronto-HQ(config-if)#ex
+Toronto-HQ(config)#%IP-4-DUPADDR: Duplicate address 199.165.201.225 on FastEthernet0/0, sourced by 0001.9706.BC62
+
+
+
+Applying acces list to torento router
+access-list 101 permit ip 172.27.12.0 0.0.0.127 any????????????????????????????????????????????????????????????????????????????????????????????
+
+
+Hamilton_Router(config-if)#
+%LINK-5-CHANGED: Interface FastEthernet0/1, changed state to up
+
+%LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/1, changed state to up
+
+Hamilton_Router(config-if)#
+Hamilton_Router(config-if)#ex
+Hamilton_Router(config)#ip dhcp pool London
+Hamilton_Router(dhcp-config)#network 172.27.15.0 255.255.255.0
+Hamilton_Router(dhcp-config)#default-router 172.27.15.1
+Hamilton_Router(dhcp-config)#dns-server 8.8.8.8
+Hamilton_Router(dhcp-config)#ex
+Hamilton_Router(config)#ip dhcp excluded-address 172.27.15.1 172.27.15.2
+
+Router(config)#hostname London_Router
+London_Router(config)#int f0/0
+London_Router(config-if)#ip h
+London_Router(config-if)#ip hel
+London_Router(config-if)#ip ad
+London_Router(config-if)#ip address 172.27.15.2 255.255.0
+                                                ^
+% Invalid input detected at '^' marker.
+	
+London_Router(config-if)#ip address 172.27.15.2 255.255.255.0
+London_Router(config-if)#ip help?
+helper-address  
+London_Router(config-if)#ip help
+London_Router(config-if)#ip helper-address 172.27.15.1
+London_Router(config-if)#no sh
+
+London_Router(config-if)#
+%LINK-5-CHANGED: Interface FastEthernet0/0, changed state to up
+
+%LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/0, changed state to up
+
+London_Router(config-if)#int f0/1
+London_Router(config-if)#ip address 172.27.15.3 255.255.255.0
+% 172.27.15.0 overlaps with FastEthernet0/0
+London_Router(config-if)#ip helper-address 172.27.15.1
+London_Router(config-if)#ex
+London_Router(config)#int f0/1
+London_Router(config-if)#no sh
+% 172.27.15.0 overlaps with FastEthernet0/0
+FastEthernet0/1: incorrect IP address assignment
+London_Router(config-if)#int f0/1
+London_Router(config-if)#ip address 172.27.15.3 255.255.255.0
+% 172.27.15.0 overlaps with FastEthernet0/0
+
+
+ipv6 ospf
+
+OTTAWA_Router(config)#ipv6 unicast-routing 
+OTTAWA_Router(config)#int g0/0
+OTTAWA_Router(config-if)#ipv6 address 2001:CAFE:ABCD:1::10/64
+OTTAWA_Router(config-if)#ex
+OTTAWA_Router(config)#int g0/1
+OTTAWA_Router(config-if)#ipv6 address 2001:CAFE:ABCD:2::10/64
+OTTAWA_Router(config-if)#ex
+OTTAWA_Router(config)#int s0/0/0
+OTTAWA_Router(config-if)#ipv6 address 2001:1234:ABCD:1111::10/126
+OTTAWA_Router(config-if)#ex
+OTTAWA_Router(config)#int g0/0
+OTTAWA_Router(config-if)#ipv6 address FE80::1 link-local
+OTTAWA_Router(config-if)#ex
+OTTAWA_Router(config)#int g0/1
+OTTAWA_Router(config-if)#ipv6 address FE80::1 link-local
+OTTAWA_Router(config-if)#ex
+OTTAWA_Router(config)#ipv6 router ospf 10
+OTTAWA_Router(config-rtr)#router-id 1.1.1.1
+OTTAWA_Router(config-rtr)#end
+
+OTTAWA_Router#conf t
+OTTAWA_Router(config)#int g0/0
+OTTAWA_Router(config-if)#ipv6 ospf 10 area 0
+OTTAWA_Router(config-if)#ex
+OTTAWA_Router(config)#int g0/1
+OTTAWA_Router(config-if)#ipv6 ospf 10 area 0
+OTTAWA_Router(config-if)#ex
+OTTAWA_Router(config)#int s0/0/0
+OTTAWA_Router(config-if)#ipv6 ospf 10 area 0
+OTTAWA_Router(config-if)#ex
+OTTAWA_Router(config)#ipv6 router ospf 10
+OTTAWA_Router(config-rtr)#auto-cost reference-bandwidth 1000
+OTTAWA_Router(config-rtr)#end
+OTTAWA_Router#
+
+
+Toronto-HQ(config)#ipv6 unicast-routing 
+Toronto-HQ(config)#int s0/0/0
+Toronto-HQ(config-if)#ipv6 address 2001:1234:ABCD:1111::20/126
+Toronto-HQ(config-if)#ex
+Toronto-HQ(config)#int s0/0/1
+Toronto-HQ(config-if)#ipv6 address 2001:1234:ABCD:2222::20/126
+Toronto-HQ(config)#ipv6 router ospf 10
+Toronto-HQ(config-rtr)#router-id 2.2.2.2
+Toronto-HQ(config-rtr)#ex
+Toronto-HQ(config)#int s0/0/0
+Toronto-HQ(config-if)#ipv6 ospf 10 area 0
+Toronto-HQ(config-if)#ex
+Toronto-HQ(config)#int s0/0/1
+Toronto-HQ(config-if)#ipv6 ospf 10 area 0
+Toronto-HQ(config-if)#ex
+Toronto-HQ(config)#ipv6 router ospf 10
+Toronto-HQ(config-rtr)#auto-cost reference-bandwidth 1000
+Toronto-HQ(config-rtr)#end
+
+
+MISSISSAUGA_Router(config)#ipv6 unicast-routing 
+MISSISSAUGA_Router(config)#int s0/0/1
+MISSISSAUGA_Router(config-if)#ipv6 address 2001:1234:ABCD:2222::10/126
+MISSISSAUGA_Router(config-if)#ex
+MISSISSAUGA_Router(config)#int g0/0
+MISSISSAUGA_Router(config-if)#ipv6 address 2001:CAFE:ABCD:F::10/64
+MISSISSAUGA_Router(config-if)#ex
+MISSISSAUGA_Router(config)#int g0/0
+MISSISSAUGA_Router(config-if)#ipv6 address FE80::2 link-local
+MISSISSAUGA_Router(config-if)#ex
+MISSISSAUGA_Router(config)#ipv6 router ospf 10
+MISSISSAUGA_Router(config-rtr)#router-id 3.3.3.3
+MISSISSAUGA_Router(config-rtr)#auto-cost reference-bandwidth 1000
+MISSISSAUGA_Router(config-rtr)#end
+
+MISSISSAUGA_Router#conf t
+MISSISSAUGA_Router(config)#int s0/0/1
+MISSISSAUGA_Router(config-if)#ipv6 ospf 10 area 0
+MISSISSAUGA_Router(config-if)#ex
+MISSISSAUGA_Router(config)#int g0/0
+MISSISSAUGA_Router(config-if)#ipv6 ospf 10 area 0
+MISSISSAUGA_Router(config-if)#ex
+
+encryption on switches
+conf t
+enable secret class
+exit
+conf t
+line console 0
+password cisco
+login
+exit
+exit
+conf t
+line vty 0 15
+password cisco
+login
+exit

@@ -1,0 +1,135 @@
+IP ADDRESS 172.27.0.0/16
+
+OTTAWA
+Needed Size (1500) 
+Allocated Size 2046
+Subnet ID
+172.27.0.0/21		
+ Assignable Range
+172.27.0.1 - 172.27.7.254
+Subnet Mask
+255.255.248.0	
+
+**********************************
+
+OTTAWA BR1
+Needed Size (700) 
+Allocated Size 1022
+Subnet ID
+172.27.0.0/22	
+ Assignable Range 
+172.27.0.1 - 172.27.3.254	
+Subnet Mask
+255.255.252.0	
+
+**********************************
+
+OTTAWA BR2	
+Needed Size (800) 
+Allocated Size 1022
+Subnet ID
+172.27.4.0/22	
+ Assignable Range 
+172.27.4.1 - 172.27.7.254	
+Subnet Mask
+255.255.252.0	
+
+*****************************************************************
+
+TORONTO
+Needed Size (870) 
+Allocated Size 1022
+Subnet ID
+172.27.8.0/21
+ Address Range 
+172.27.8.0 - 172.27.12.127
+Subnet Mask
+255.255.252.0
+
+**********************************
+
+General 
+Needed Size (400) 
+Allocated Size 510
+Subnet ID
+172.27.8.0/23	
+Assignable Range
+172.27.8.1 - 172.27.9.254
+Wildcard Mask
+0.0.0.255
+Subnet Mask
+255.255.254.0	
+
+**********************************
+
+Accounting 
+Needed Size (240) 
+Allocated Size 254 
+Subnet ID
+172.27.10.0/24		
+Assignable Range
+172.27.10.1 - 172.27.10.254
+Subnet Mask
+255.255.255.0
+
+**********************************
+
+HR 
+Needed Size (160) 
+Allocated Size 254 
+Subnet ID
+172.27.11.0/24
+Assignable Range
+172.27.11.1 - 172.27.11.254
+Subnet Mask
+255.255.255.0
+
+**********************************
+
+Tech.Support 
+Needed Size (70) 
+Allocated Size 126
+Subnet ID
+172.27.12.0/25	
+Assignable Range
+172.27.12.1 - 172.27.12.126
+Subnet Mask
+255.255.255.128	
+
+*****************************************************************
+
+Hamilton 
+Needed Size (200) 
+Allocated Size 254
+Subnet ID
+172.27.13.0/24	
+Host Address Range  
+172.27.13.1 - 172.27.13.254
+Subnet Mask
+255.255.255.0
+
+*****************************************************************
+
+MISSISSAUGA	
+Needed Size (200) 
+Allocated Size 254
+Subnet ID
+172.27.14.0/24
+Host Address Range  
+172.27.14.1 - 172.27.14.254
+Subnet Mask
+255.255.255.0
+
+*****************************************************************
+
+London 
+Needed Size (140) 
+Allocated Size 254
+Subnet ID
+172.27.15.0/24		
+Host Address Range
+172.27.15.1 - 172.27.15.254	
+Subnet Mask
+255.255.255.0	
+
+*****************************************************************
